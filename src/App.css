@@ -1,0 +1,6 @@
+@import "tailwindcss";
+/* App.css */
+.CodeMirror {
+  font-size: 20px; /* change to your preferred size */
+  line-height: 1.5;
+}
