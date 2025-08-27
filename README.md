@@ -38,10 +38,10 @@ Clone the repository and install dependencies:
 
 ```bash
 # Clone the repo
-git clone https://github.com/your-username/your-repo-name.git
+git clone https://github.com/iamakram321/code-editor.git
 
 # Navigate to project folder
-cd your-repo-name
+cd code-editor
 
 # Install dependencies
 npm install
@@ -75,7 +75,3 @@ When a user leaves, others can continue editing without interruptions.
 🤝 Contributing
 
 Contributions are welcome! Feel free to fork the repo and submit pull requests.
-
-📄 License
-
-This project is licensed under the MIT License.
