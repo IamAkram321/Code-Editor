@@ -14,7 +14,7 @@ A feature-rich, real-time collaborative code editor where multiple users can wri
 
 ### 💻 Code Editor Features
 - 🌐 **17+ Programming Languages** - JavaScript, Python, Java, C++, TypeScript, HTML, CSS, PHP, Ruby, Go, Rust, SQL, Markdown, YAML, JSON, and more
-- 🎨 **9 Beautiful Themes** - Dracula, Monokai, Material, Nord, Oceanic Next, One Dark, Solarized, Tomorrow Night, Gruvbox Dark
+- 🎨 **6 Beautiful Themes** - Dracula, Monokai, Material, Nord, Solarized, Tomorrow Night
 - 🔍 **Search & Replace** - Find and replace text with keyboard shortcuts (Ctrl+F, Ctrl+H)
 - 💅 **Code Formatting** - Auto-format JavaScript, HTML, and CSS code
 - 📝 **Syntax Highlighting** - Full syntax support for all languages
