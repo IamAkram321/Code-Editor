@@ -166,11 +166,8 @@ npm start
 - Monokai
 - Material
 - Nord
-- Oceanic Next
-- One Dark
 - Solarized Dark
 - Tomorrow Night Bright
-- Gruvbox Dark
 
 ---
 
