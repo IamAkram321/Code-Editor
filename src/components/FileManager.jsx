@@ -73,7 +73,9 @@ const FileManager = ({ socketRef, roomId, onFileChange, currentFile }) => {
       language: newFileLanguage,
     };
 
-    socketRef.current.emit("add-file", { roomId, file: newFile });
+    if (socketRef.current) {
+      socketRef.current.emit("add-file", { roomId, file: newFile });
+    }
 
     setNewFileName("");
     setNewFileLanguage("javascript");

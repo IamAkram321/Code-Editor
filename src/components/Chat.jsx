@@ -75,4 +75,3 @@ const Chat = ({ socketRef, roomId, username }) => {
 };
 
 export default Chat;
-
