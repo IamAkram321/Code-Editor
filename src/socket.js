@@ -10,5 +10,7 @@ export const initSocket = () => {
         transports: ["websocket"],
         upgrade: false,
     };
-    return io(import.meta.env.VITE_SERVER_URL, options);
+    // Use environment variable or default to localhost:5000
+    const serverUrl = import.meta.env.VITE_SERVER_URL || "http://localhost:5000";
+    return io(serverUrl, options);
 };

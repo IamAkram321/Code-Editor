@@ -26,6 +26,8 @@ app.use((req,res,next)=>{
 
 const userSocketMap = {};
 const codeData = {}; 
+const roomSettings = {}; // Store language, theme per room
+const roomFiles = {}; // Store files per room
 
 function getAllConnectedClients(roomId) {
     return Array.from(io.sockets.adapter.rooms.get(roomId) || []).map((socketId) => {
@@ -40,6 +42,11 @@ io.on("connection", (socket) => {
     console.log("socket connected", socket.id);
 
     socket.on(ACTIONS.JOIN, ({ roomId, username }) => {
+        if (!roomId || !username) {
+            console.error("Invalid join request:", { roomId, username });
+            return;
+        }
+
         userSocketMap[socket.id] = username;
         socket.join(roomId);
         socket.roomId = roomId;
@@ -48,7 +55,20 @@ io.on("connection", (socket) => {
         const clients = getAllConnectedClients(roomId);
         console.log(`Room ${roomId} clients:`, clients);
 
-        // Notify everyone in the room about the joined user and send list
+        // Initialize room settings if not exists
+        if (!roomSettings[roomId]) {
+            roomSettings[roomId] = {
+                language: "javascript",
+                theme: "dracula",
+            };
+        }
+
+        // Initialize room files if not exists
+        if (!roomFiles[roomId]) {
+            roomFiles[roomId] = [{ id: "1", name: "main", language: "javascript" }];
+        }
+
+        // Notify everyone in the room about the joined user
         clients.forEach(({ socketId }) => {
             io.to(socketId).emit(ACTIONS.JOINED, {
                 clients,
@@ -56,6 +76,13 @@ io.on("connection", (socket) => {
                 socketId: socket.id,
             });
         });
+
+        // Send current room settings to the new user
+        socket.emit(ACTIONS.LANGUAGE_CHANGE, { language: roomSettings[roomId].language });
+        socket.emit(ACTIONS.THEME_CHANGE, { theme: roomSettings[roomId].theme });
+
+        // Send file list to the new user
+        socket.emit("file-list", { files: roomFiles[roomId] });
 
         // If there is existing code for this room, send it to the newly joined socket
         if (codeData[roomId]) {
@@ -69,24 +96,92 @@ io.on("connection", (socket) => {
             codeData[roomId] = code;
         }
 
-        // Broadcast to other clients in the room
+        // Broadcast to other clients in the room (exclude sender)
         socket.to(roomId).emit(ACTIONS.CODE_CHANGE, { code });
+    });
+
+    socket.on(ACTIONS.CURSOR_CHANGE, ({ roomId, cursor, socketId }) => {
+        // Broadcast cursor position to other clients
+        socket.to(roomId).emit(ACTIONS.CURSOR_CHANGE, {
+            cursor,
+            socketId: socketId || socket.id,
+            username: userSocketMap[socketId || socket.id],
+        });
+    });
+
+    socket.on(ACTIONS.LANGUAGE_CHANGE, ({ roomId, language }) => {
+        if (roomId && language && roomSettings[roomId]) {
+            roomSettings[roomId].language = language;
+            // Broadcast language change to all clients in the room (including sender)
+            io.to(roomId).emit(ACTIONS.LANGUAGE_CHANGE, { language });
+        }
+    });
+
+    socket.on(ACTIONS.THEME_CHANGE, ({ roomId, theme }) => {
+        if (roomId && theme && roomSettings[roomId]) {
+            roomSettings[roomId].theme = theme;
+            // Broadcast theme change to all clients in the room (including sender)
+            io.to(roomId).emit(ACTIONS.THEME_CHANGE, { theme });
+        }
+    });
+
+    // Chat functionality
+    socket.on("chat-message", ({ roomId, username, message, timestamp }) => {
+        if (roomId && username && message) {
+            io.to(roomId).emit("chat-message", {
+                username,
+                message,
+                timestamp,
+            });
+        }
+    });
+
+    // File management
+    socket.on("get-file-list", ({ roomId }) => {
+        if (roomId && roomFiles[roomId]) {
+            socket.emit("file-list", { files: roomFiles[roomId] });
+        }
+    });
+
+    socket.on("add-file", ({ roomId, file }) => {
+        if (roomId && file) {
+            if (!roomFiles[roomId]) {
+                roomFiles[roomId] = [];
+            }
+            // Check if file already exists
+            if (!roomFiles[roomId].some(f => f.id === file.id)) {
+                roomFiles[roomId].push(file);
+                io.to(roomId).emit("file-added", { file });
+            }
+        }
+    });
+
+    socket.on("remove-file", ({ roomId, fileId }) => {
+        if (roomId && fileId && roomFiles[roomId]) {
+            roomFiles[roomId] = roomFiles[roomId].filter((f) => f.id !== fileId);
+            io.to(roomId).emit("file-removed", { fileId });
+        }
     });
 
     socket.on("disconnecting", () => {
         const rooms = [...socket.rooms]; // includes socket.id and joined rooms
+        const username = userSocketMap[socket.id];
+        
         rooms.forEach((roomId) => {
             if (roomId === socket.id) return; // skip personal room
-            socket.to(roomId).emit(ACTIONS.DISCONNECTED, {
-                socketId: socket.id,
-                username: userSocketMap[socket.id],
-            });
+            // Only notify if user was actually in the room
+            if (username) {
+                socket.to(roomId).emit(ACTIONS.DISCONNECTED, {
+                    socketId: socket.id,
+                    username: username,
+                });
+            }
         });
-        delete userSocketMap[socket.id];
     });
 
-    socket.on("disconnect", () => {
-        console.log("socket disconnected", socket.id);
+    socket.on("disconnect", (reason) => {
+        console.log("socket disconnected", socket.id, reason);
+        delete userSocketMap[socket.id];
     });
 });
 

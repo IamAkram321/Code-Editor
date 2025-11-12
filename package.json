@@ -12,12 +12,12 @@
     "preview": "vite preview",
     "start": "node server.js",
     "heroku-postbuild": "npm install --prefix client && npm run build --prefix client"
-
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",
     "codemirror": "^5.65.20",
     "express": "^5.1.0",
+    "js-beautify": "^1.15.1",
     "react": "^19.1.1",
     "react-avatar": "^5.0.4",
     "react-dom": "^19.1.1",
@@ -40,7 +40,6 @@
     "nodemon": "^3.1.10",
     "vite": "^7.1.0"
   },
-  
   "engines": {
     "node": ">=18.x"
   }
