@@ -39,7 +39,7 @@ const EditorPage = () => {
   const [showChat, setShowChat] = useState(false);
   const [showOutput, setShowOutput] = useState(false);
 
-  /* ================= SOCKET INIT (ONCE) ================= */
+  /*  socket init (once)*/
   useEffect(() => {
     if (!username || isInitializedRef.current) return;
 
@@ -66,7 +66,7 @@ const EditorPage = () => {
       setClients((prev) => prev.filter((c) => c.socketId !== socketId));
     });
 
-    // Chat listener (ONCE)
+    // Chat listener (once)
     const onChatMessage = (msg) => {
       setChatMessages((prev) => [...prev, msg]);
       if (!showChat) setHasUnreadMessages(true);
@@ -89,7 +89,7 @@ const EditorPage = () => {
     return <Navigate to="/" replace />;
   }
 
-  /* ================= HANDLERS ================= */
+  /*handlers */
   const handleThemeChange = useCallback(
     (newTheme) => {
       setTheme(newTheme);

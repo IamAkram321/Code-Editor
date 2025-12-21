@@ -19,7 +19,7 @@ const CodeExecutor = ({ getCode }) => {
         logs.push(args.join(" "));
       };
 
-      new Function(code)(); // JS execution
+      new Function(code)(); 
 
       console.log = originalLog;
       setOutput(logs.join("\n") || "✔ Code executed successfully");

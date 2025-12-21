@@ -10,12 +10,11 @@ export const initSocket = () => {
         transports: ["websocket"],
     };
 
-    // DEV vs PROD handling
     const isDev = import.meta.env.DEV;
 
     const serverUrl = isDev
-        ? "http://localhost:5000" // local backend
-        : window.location.origin; // Render / production
+        ? "http://localhost:5000" 
+        : window.location.origin;
 
     return io(serverUrl, options);
 };
