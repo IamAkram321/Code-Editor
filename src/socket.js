@@ -2,15 +2,20 @@ import { io } from "socket.io-client";
 
 export const initSocket = () => {
     const options = {
-        "force new connection": true,
+        forceNew: true,
         reconnection: true,
         reconnectionAttempts: Infinity,
         reconnectionDelay: 1000,
         reconnectionDelayMax: 5000,
         transports: ["websocket"],
-        upgrade: false,
     };
-    // Use environment variable or default to localhost:5000
-    const serverUrl = import.meta.env.VITE_SERVER_URL || "http://localhost:5000";
+
+    // DEV vs PROD handling
+    const isDev = import.meta.env.DEV;
+
+    const serverUrl = isDev
+        ? "http://localhost:5000" // local backend
+        : window.location.origin; // Render / production
+
     return io(serverUrl, options);
 };
