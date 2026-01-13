@@ -139,26 +139,6 @@ npm start
 - `Ctrl+/` - Toggle comment
 - `Shift+Tab` - Unindent selection
 
----
-
-## 🎯 Supported Languages
-
-- JavaScript / JSX
-- Python
-- Java
-- C / C++
-- TypeScript
-- HTML / CSS
-- PHP
-- Ruby
-- Go
-- Rust
-- SQL
-- Markdown
-- YAML
-- JSON
-
----
 
 ## 🎨 Available Themes
 
